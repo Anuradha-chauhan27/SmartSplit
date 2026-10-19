@@ -3,11 +3,11 @@ const User = require("../models/User");
 
 
 
-const generateToken = (Id) => {
-    return jwt.sign({ Id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-    })
-}
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+    });
+};
 
 exports.registerUser = async (req, res) => {
     const { fullName, email, password, profileImageUrl } = req.body || {};
@@ -46,40 +46,59 @@ exports.registerUser = async (req, res) => {
     }
 };
 
+
 exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     if (!email || !password) {
-        return res.status(400).json({ message: "Please provide both email and password" });
+        return res.status(400).json({
+            message: "Please provide both email and password"
+        });
     }
 
     try {
         const user = await User.findOne({ email });
 
         if (!user || !(await user.comparePassword(password))) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(400).json({
+                message: "Invalid credentials"
+            });
         }
 
-        const token = generateToken(user._id);
-        res.status(200).json({ token });
+        res.status(200).json({
+            id: user._id,
+            user,
+            token: generateToken(user._id)
+        });
+
     } catch (error) {
         console.error("Error logging in user:", error);
-        res.status(500).json({ message: "Server error" });
+
+        res.status(500).json({
+            message: "Server error"
+        });
     }
 };
 
+
 exports.getUserInfo = async (req, res) => {
     try {
-        const user = await User.findById(req.user.Id).select("-password");
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
+        if (!req.user) {
+            return res.status(401).json({
+                message: "Not authorized"
+            });
         }
-        res.status(200).json(user);
+
+        return res.status(200).json(req.user);
+
     } catch (error) {
         console.error("Error fetching user info:", error);
-        res.status(500).json({ message: "Server error" });
+
+        return res.status(500).json({
+            message: "Server error"
+        });
     }
-};              
+};        
 
 
 
