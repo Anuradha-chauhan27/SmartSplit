@@ -1,10 +1,11 @@
 import React from 'react';
+import DashboardLayout from '../../components/layouts/DashboardLayout';
  
 const Expense = () => {
   return (
-    <>
-      <h1>Expense Page</h1>
-    </>
+   <DashboardLayout activeMenu="Expense">
+      <div className='my-5 mx-auto'></div>
+    </DashboardLayout>
   );
 };
 

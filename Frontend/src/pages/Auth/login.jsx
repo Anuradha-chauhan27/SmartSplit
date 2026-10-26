@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import Input from '../../components/Inputs/input';
 import { useNavigate } from 'react-router-dom';
@@ -6,10 +6,13 @@ import { Link } from 'react-router-dom';
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from '../../utils/apiPaths';
+import { UserContext } from '../../context/userContext';
 const Login = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState(null);
+
+  const {updateUser} = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -38,6 +41,7 @@ const Login = () => {
       const {token, user} = response.data;
       if(token){
         localStorage.setItem("token",token);
+        updateUser(user)
         navigate("/dashboard");
       }
     }catch(error){

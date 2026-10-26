@@ -6,8 +6,10 @@ import Income from './pages/Dashboard/Income';
 import Login from './pages/Auth/login';
 import { Navigate } from 'react-router-dom';
 import SignUp from './pages/Auth/signup';
+import UserProvider from './context/userContext';
 const App = () => {
   return (
+    <UserProvider>
     <div>
       <Router>
         <Routes>
@@ -20,6 +22,7 @@ const App = () => {
         </Routes>
       </Router>
     </div>
+    </UserProvider>
   );
 };
 
